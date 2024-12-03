@@ -1,0 +1,18 @@
+diff --git a/requirements.txt b/requirements.txt
+index ef856cb..50143fd 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,5 +1,5 @@
+ numpy>=1.16.1
+-opencv-python==3.2.0.8
++opencv-python
+ scikit-image
+ scikit-learn
+ Pillow>=4.0.0
+@@ -7,6 +7,4 @@ pytest
+ torch
+ torchvision
+ tqdm
+-git+https://github.com/ytdl-org/youtube-dl.git
+-tensorflow==1.15.2
+ imagesize
