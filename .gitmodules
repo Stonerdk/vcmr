@@ -1,0 +1,6 @@
+[submodule "lp-music-caps"]
+	path = lp-music-caps
+	url = https://github.com/seungheondoh/lp-music-caps
+[submodule "ml-mobileclip"]
+	path = ml-mobileclip
+	url = https://github.com/apple/ml-mobileclip
