@@ -18,3 +18,6 @@ thumbnails/
 val_urls.txt
 links/
 past_datasets/
+*.pth
+wandb/
+__pycache__/
