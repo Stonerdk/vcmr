@@ -9,6 +9,7 @@ import wandb
 from torch.amp import autocast, GradScaler
 from info_nce import InfoNCE
 import random
+from transformers import BertModel
 
 os.chdir("/root/dev/vcmr")
 
@@ -20,11 +21,11 @@ contrastive = True
 negative_aug = 3
 siamese = False
 model_name = "TRANSFORMER"
-temperature = 0.5
+temperature = 0.2 # 0.2
 steplr_gamma = 0.5
 steplr_step = 10
 z_size = 256
-loss_type = "cossim"
+loss_type = "infonce"
 import pickle
 
 def cosine_similarity_loss(image_embeds, music_embeds, labels):
@@ -92,6 +93,40 @@ class MLP(nn.Module):
         z = self.mlp(x)
         return F.normalize(z, dim=1)
 
+class Identical(nn.Module):
+    def __init__(self, *args, **kwargs):
+        super(Identical, self).__init__()
+
+    def forward(self, x):
+        return x
+
+class SampleCNNMLP(nn.Module):
+    # 프로그래밍의 일관성을 위해서 파라미터 유지, 그러나 사용하지 않음
+    def __init__(self, input_dim=512, input_samplecnn_dim=50, output_dim=512):
+        super(SampleCNNMLP, self).__init__()
+        self.mlp = nn.Sequential(
+            nn.Linear(input_samplecnn_dim, 2048),
+            nn.BatchNorm1d(2048),
+            nn.ReLU(),
+            nn.Dropout(p=0.4),
+            nn.Linear(2048, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(),
+            nn.Dropout(p=0.4),
+            nn.Linear(1024, 2048),
+            nn.BatchNorm1d(2048),
+            nn.ReLU(),
+            nn.Dropout(p=0.4),
+            nn.Linear(2048, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Linear(512, 512)
+        )
+
+    def forward(self, x, s):
+        z = self.mlp(s)
+        return F.normalize(z, dim=1)
+
 class MusicTransformer(nn.Module):
     def __init__(self, input_dim=512, input_samplecnn_dim=50, output_dim=128, transformer_hidden_dim=256, nhead=8, num_layers=4, dropout=0.1):
         super(MusicTransformer, self).__init__()
@@ -125,6 +160,12 @@ elif model_name == "MLP":
 elif model_name == "TRANSFORMER":
     ImageProjection = MLP
     MusicProjection = MusicTransformer
+elif model_name == "PRETRAINED_TRANSFORMER":
+    ImageProjection = MLP
+    MusicProjection = PretrainedMusicTransformer
+elif model_name == "SAMPLECNN_MLP":
+    ImageProjection = Identical
+    MusicProjection = SampleCNNMLP
 
 if loss_type == "cossim":
     loss_fn = cosine_similarity_loss
@@ -269,7 +310,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             with autocast("cuda"):
                 projected_image = image_proj(image_embed)
-                if model_name == "TRANSFORMER":
+                if model_name == "TRANSFORMER" or model_name == "SAMPLECNN_MLP":
                     projected_music = music_proj(music_embed, music_samplecnn_embed)
                 else:
                     projected_music = music_proj(music_embed)
@@ -293,7 +334,7 @@ if __name__ == "__main__":
                 label = label.to(device, non_blocking=True)
                 with autocast("cuda"):
                     projected_image = image_proj(image_embed)
-                    if model_name == "TRANSFORMER":
+                    if model_name == "TRANSFORMER" or model_name == "SAMPLECNN_MLP":
                         projected_music = music_proj(music_embed, music_samplecnn_embed)
                     else:
                         projected_music = music_proj(music_embed)
@@ -323,9 +364,7 @@ if __name__ == "__main__":
                 "loss": avg_val_loss,
             }
             # Save the model class along with the checkpoint
-            with open(f"model_class_epoch_{epoch + 1}.pkl", "wb") as f:
-                pickle.dump([ImageProjection, MusicProjection], f)
-            checkpoint_path = f"checkpoint_epoch_{epoch + 1}_cossim_3.pth"
+            checkpoint_path = f"checkpoint_epoch_{epoch + 1}_samplecnn.pth"
             torch.save(checkpoint, checkpoint_path)
             # wandb.save(checkpoint_path)
 

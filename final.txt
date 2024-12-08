@@ -1,0 +1,53 @@
+RAW
+Recall@10: 0.47%
+Recall@454: 12.12%
+Recall@909: 21.47%
+Recall@1818: 35.75%
+Recall@2727: 47.91%
+MR: 2916.0000
+mAP: 0.0036
+
+Cosine Similarity
+Recall@10: 0.40%
+Recall@454: 13.75%
+Recall@909: 24.38%
+Recall@1818: 42.65%
+Recall@2727: 56.19%
+MR: 2304.0000
+mAP: 0.0029
+
+Cosine Similarity (1:3)
+Recall@10: 0.41%
+Recall@454: 16.75%
+Recall@909: 29.09%
+Recall@1818: 45.57%
+Recall@2727: 56.99%
+MR: 2151.0000
+mAP: 0.0030
+
+INFONCE
+Recall@10: 1.01%
+Recall@454: 23.56%
+Recall@909: 37.71%
+Recall@1818: 56.71%
+Recall@2727: 68.39%
+MR: 1449.0000
+mAP: 0.0058
+
+SampleCNN
+Recall@10: 1.24%
+Recall@453: 24.23%
+Recall@906: 37.33%
+Recall@1813: 55.44%
+Recall@2719: 68.43%
+MR: 1481.0000
+mAP: 0.0069
+
+Transformer + INFONCE
+Recall@10: 1.73%
+Recall@453: 30.68%
+Recall@906: 45.85%
+Recall@1813: 63.75%
+Recall@2719: 74.14%
+MR: 1082.0000
+mAP: 0.0096

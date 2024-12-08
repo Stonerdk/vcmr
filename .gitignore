@@ -10,6 +10,8 @@ music_train/
 music_test/
 music_features_train/
 music_features_test/
+music_SampleCNN_test/
+music_SampleCNN_train/
 
 
 cookies.txt
