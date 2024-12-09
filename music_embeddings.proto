@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message Embeddings {
+    repeated float embedding = 1;
+}
+
+message MusicEmbeddings {
+    repeated string filenames = 1;
+    repeated Embeddings embeddings = 2;
+    repeated string artists = 3;
+    repeated string tracks = 4;
+}
